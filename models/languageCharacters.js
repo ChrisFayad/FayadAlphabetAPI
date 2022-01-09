@@ -6,27 +6,31 @@ const LanguageCharactersSchema = mongoose.Schema({
         required: true
     },
     capsAlphabet: {
-        type: [String],
+        type: [],
         required: true
     },
+    primaryCapsAlphabet: [],
+    secondaryCapsAlphabet: [],
     lowerAlphabet: {
-        type: [String],
+        type: [],
         required: true
     },
+    primaryLowerAlphabet: [],
+    secondaryLowerAlphabet: [],
     firstKeypadLayer: {
-        type: [String],
+        type: [],
         required: true
     },
     secondKeypadLayer: {
-        type: [String],
+        type: [],
         required: false
     },
     thirdKeypadLayer: {
-        type: [String],
+        type: [],
         required: false
     },
     fourthKeypadLayer: {
-        type: [String],
+        type: [],
         required: false
     },
     specialSymbols: [{
