@@ -13,6 +13,4 @@ router.patch('/', modifyLanguage);
 
 router.delete('/', deleteLanguage);
 
-router.patch('/:language', generateArrays);
-
 module.exports = router;
