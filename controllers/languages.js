@@ -24,12 +24,11 @@ const createLanguage = async (req, res) => {
     let newLanguage = new LanguageCharacters(req.body);
     const lowerUnicodeArray = [];
     const capsUnicodeArray = [];
-    const specialSymbolsUnicode = [];
     const secondKeypadUnicode = [];
     const thirdKeypadUnicode = [];
     const fourthKeypadUnicode = [];
     try {
-        if (newLanguage.language !== "English") {
+        if (newLanguage.language === "Spanish") {
             newLanguage.lowerAlphabet.forEach((char) => {
                 lowerUnicodeArray.push(String.fromCharCode(parseInt(char, 16)));
             });
@@ -38,10 +37,6 @@ const createLanguage = async (req, res) => {
                 capsUnicodeArray.push(String.fromCharCode(parseInt(char, 16)));
             });
             newLanguage.capsAlphabet = capsUnicodeArray;
-            newLanguage.specialSymbols.forEach((char) => {
-                specialSymbolsUnicode.push(String.fromCharCode(parseInt(char, 16)));
-            });
-            newLanguage.specialSymbols = specialSymbolsUnicode;
         }
         generateCharactersArrays(newLanguage);
         generateSpecialSymbols(newLanguage);
