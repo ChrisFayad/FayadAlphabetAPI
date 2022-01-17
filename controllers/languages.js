@@ -1,10 +1,15 @@
-const { version } = require('mongoose');
+// const { version } = require('mongoose');
 const LanguageCharacters = require('../models/languageCharacters');
+const nonLatinLanguageCharacters = require('../models/nonLatinLanguageCharacters');
 
 const getAllLanguages = async (req, res) => {
     try {
-        const languages = await LanguageCharacters.find();
+        let languages = [];
+        const latinLanguages = await LanguageCharacters.find();
+        const nonLatinLanguages = await nonLatinLanguageCharacters.find();
         res.status(200);
+        latinLanguages.forEach(language => languages.push(language)); 
+        nonLatinLanguages.forEach(language => languages.push(language));
         languages.forEach(language => res.json(language.language));
     } catch (error) {
         res.status(500).json({ msg: 'app could not retrieve data from database!' });
@@ -13,7 +18,9 @@ const getAllLanguages = async (req, res) => {
 
 const getLanguage = async (req, res) => {
     try {
-        const language = await LanguageCharacters.findOne({language: req.params.language});
+        let language = '';
+        language = await LanguageCharacters.findOne({language: req.params.language});
+        language = await nonLatinLanguageCharacters.findOne({language: req.params.language});
         res.status(200).json(language);
     } catch (error) {
         res.status(404).json({ msg: `The ${languageQuery} Language is not found!` });
@@ -56,6 +63,33 @@ const createLanguage = async (req, res) => {
         res.status(201).json(`The ${newLanguage.language} Language has been added!`);
     } catch (error) {
         res.status(400).json({msg: `The Data is not valid, try again`});
+    }
+};
+
+const createNonLatinLanguage = async (req, res) => {
+    let newLanguage = new nonLatinLanguageCharacters(req.body);
+    const secondKeypadUnicode = [];
+    const thirdKeypadUnicode = [];
+    const fourthKeypadUnicode = [];
+    try {
+        generateNonLatinCharactersArrays(newLanguage);
+        generateSpecialSymbols(newLanguage);
+        newLanguage.secondKeypadLayer.forEach((char) => {
+            secondKeypadUnicode.push(String.fromCharCode(parseInt(char, 16)));
+        });
+        newLanguage.secondKeypadLayer = secondKeypadUnicode;
+        newLanguage.thirdKeypadLayer.forEach((char) => {
+            thirdKeypadUnicode.push(String.fromCharCode(parseInt(char, 16)));
+        });
+        newLanguage.thirdKeypadLayer = thirdKeypadUnicode;
+        newLanguage.fourthKeypadLayer.forEach((char) => {
+            fourthKeypadUnicode.push(String.fromCharCode(parseInt(char, 16)));
+        });
+        newLanguage.fourthKeypadLayer = fourthKeypadUnicode;
+        await newLanguage.save();
+        res.status(201).json(`The ${newLanguage.language} Language has been added!`);
+    } catch (error) {
+    res.status(400).json({msg: `The Data is not valid, try again`});
     }
 };
 
@@ -128,7 +162,7 @@ const generateCharactersArrays = async (language) => {
                             secondaryCapsAlphabet: secondaryCapsAlphabet,
                     } }
             );
-        const  upToDateLanguage = await LanguageCharacters.findOne({language: language.language});
+        const upToDateLanguage = await LanguageCharacters.findOne({language: language.language});
         generateNumberAbbreviations(upToDateLanguage);
 };
 
@@ -390,6 +424,190 @@ const generateAsciiCapsCharactersFormula = (secondaryCapsAlphabet) => {
     return secondaryCapsAsciiCodeArray;
 };
 
+const generateNonLatinCharactersArrays = async (language) => {
+    const Alphabet = language.Alphabet;
+    const primaryAlphabet = [];
+    const secondaryArray = [];
+    const secondaryAlphabet = [];
+    const primaryArray = [...Alphabet.slice(0,5), ...Alphabet.slice(9,14),
+        ...Alphabet.slice(18,22)];
+    primaryArray.forEach((letter) => {
+        primaryAlphabet.push({char: letter, code: letter.charCodeAt(0)});
+    });
+    Alphabet.filter((letter, index) => {
+        if (primaryArray.includes(letter) === false) {
+            secondaryArray.push(Alphabet[index]);
+        }
+    });
+    const secondaryUnicodeArray = generateUnicodeNonLatinCharactersFormula(secondaryArray);
+    secondaryArray.forEach((letter, index) => {
+        secondaryAlphabet.push({char: letter, code: secondaryUnicodeArray[index]});
+    });
+    await nonLatinLanguageCharacters.updateOne(
+        { language: language.language },
+        { $set: {
+                    primaryAlphabet: primaryAlphabet,
+                    secondaryAlphabet: secondaryAlphabet
+            } }
+    );
+    const upToDateLanguage = await nonLatinLanguageCharacters.findOne({language: language.language});
+    generateNonLatinNumberAbbreviations(upToDateLanguage);
+};
+
+const generateUnicodeNonLatinCharactersFormula = (secondaryAlphabet) => {
+    const secondaryUnicodeArray = [];
+    secondaryAlphabet.forEach((char, index) => {
+        switch (index) {
+            case 0:
+                firstAsciiCode = 1575;
+                secondAsciiCode = 1576;
+            break;
+            case 1:
+                firstAsciiCode = 1576;
+                secondAsciiCode = 1578;
+            break;
+            case 2:
+                firstAsciiCode = 1578;
+                secondAsciiCode = 1579;
+            break;
+            case 3:
+                firstAsciiCode = 1579;
+                secondAsciiCode = 1580;
+            break;
+            case 4:
+                firstAsciiCode = 1585;
+                secondAsciiCode = 1586;
+            break;
+            case 5:
+                firstAsciiCode = 1586;
+                secondAsciiCode = 1587;
+            break;
+            case 6:
+                firstAsciiCode = 1587;
+                secondAsciiCode = 1588;
+            break;
+            case 7:
+                firstAsciiCode = 1588;
+                secondAsciiCode = 1589;
+            break;
+            case 8:
+                firstAsciiCode = 1594;
+                secondAsciiCode = 1601;
+            break;
+            case 9:
+                firstAsciiCode = 1601;
+                secondAsciiCode = 1602;
+            break;
+            case 10:
+                firstAsciiCode = 1602;
+                secondAsciiCode = 1603;
+            break;
+            case 11:
+                firstAsciiCode = 1594;
+                secondAsciiCode = 1603;
+            break;
+    
+            case 12:
+                firstAsciiCode = 1575;
+                secondAsciiCode = 1585;
+            break;
+            case 13:
+                firstAsciiCode = 1576;
+                secondAsciiCode = 1586;
+            break;
+            case 14:
+                firstAsciiCode = 1578;
+                secondAsciiCode = 1587;
+            break;
+            case 15:
+                firstAsciiCode = 1579;
+                secondAsciiCode = 1588;
+            break;
+            case 16:
+                firstAsciiCode = 1580;
+                secondAsciiCode = 1589;
+            break;
+            case 17:
+                firstAsciiCode = 1586;
+                secondAsciiCode = 1594;
+            break;
+            case 18:
+                firstAsciiCode = 1587;
+                secondAsciiCode = 1601;
+            break;
+            case 19:
+                firstAsciiCode = 1588;
+                secondAsciiCode = 1602;
+            break;
+            case 20:
+                firstAsciiCode = 1589;
+                secondAsciiCode = 1603;
+            break;
+    
+            case 21:
+                firstAsciiCode = 1576;
+                secondAsciiCode = 1579;
+            break;
+            case 22:
+                firstAsciiCode = 1578;
+                secondAsciiCode = 1580;
+            break;
+            case 23:
+                firstAsciiCode = 1576;
+                secondAsciiCode = 1580;
+            break;
+            case 24:
+                firstAsciiCode = 1586;
+                secondAsciiCode = 1588;
+            break;
+            case 25:
+                firstAsciiCode = 1587;
+                secondAsciiCode = 1589;
+            break;
+            case 26:
+                firstAsciiCode = 1586;
+                secondAsciiCode = 1589;
+            break;
+            case 27:
+                firstAsciiCode = 1594;
+                secondAsciiCode = 1602;
+            break;
+            case 28:
+                firstAsciiCode = 1601;
+                secondAsciiCode = 1603;
+            break;
+
+            case 29:
+                firstAsciiCode = 1575;
+                secondAsciiCode = 1578;
+            break;
+            case 30:
+                firstAsciiCode = 1575;
+                secondAsciiCode = 1579;
+            break;
+            case 31:
+                firstAsciiCode = 1575;
+                secondAsciiCode = 1580;
+            break;
+            case 32:
+                firstAsciiCode = 1585;
+                secondAsciiCode = 1587;
+            break;
+            case 33:
+                firstAsciiCode = 1585;
+                secondAsciiCode = 1588;
+            break;
+            case 34:
+                firstAsciiCode = 1585;
+                secondAsciiCode = 1589;
+            break;
+        }
+    const charactersFormula = ((firstAsciiCode + secondAsciiCode) / 2) + firstAsciiCode;
+    secondaryUnicodeArray.push(charactersFormula);
+    });
+    return secondaryUnicodeArray;
+};
+
 const generateSpecialSymbols = async (language) => {
     const firstKeypadLayer = language.firstKeypadLayer;
     const specialSymbols = language.specialSymbols;
@@ -402,13 +620,17 @@ const generateSpecialSymbols = async (language) => {
         if (symbol === "@") {
            specialSymbolFormula.push(Math.pow(firstKeypadLayer[10].charCodeAt(0),2));
         }
-        if (symbol === "?" || symbol === "¿") {
+        if (symbol === "?" || symbol === "¿" || symbol === "؟") {
             specialSymbolFormula.push(Math.pow(firstKeypadLayer[11].charCodeAt(0),2));
         }
         specialSymbolsObject.push({ char: symbol, code: specialSymbolFormula[index]});
     });
     try {
         await LanguageCharacters.updateOne(
+            { language: language.language },
+            { $set: { specialSymbolsObject: specialSymbolsObject }}
+        );
+        await nonLatinLanguageCharacters.updateOne(
             { language: language.language },
             { $set: { specialSymbolsObject: specialSymbolsObject }}
         );
@@ -443,4 +665,30 @@ const generateNumberAbbreviations = async (language) => {
     );
 };
 
-module.exports = {getAllLanguages, getLanguage, createLanguage, modifyLanguage, deleteLanguage};
+const generateNonLatinNumberAbbreviations = async (language) => {
+    const primaryAlphabet = language.primaryAlphabet;
+    const numberAbbreviations = language.numberAbbreviations;
+    const numberAbbreviationFormula = [];
+    const numberAbbreviationsObject = [];
+    numberAbbreviations.forEach((number, index) => {
+        if (number === "ألف") {
+            numberAbbreviationFormula.push(primaryAlphabet[1].code + primaryAlphabet[6].code + primaryAlphabet[10].code);
+        }
+        if (number === "مليون") {
+            numberAbbreviationFormula.push(primaryAlphabet[2].code + primaryAlphabet[7].code + primaryAlphabet[11].code);
+        }
+        if (number === "مليار") {
+            numberAbbreviationFormula.push(primaryAlphabet[3].code + primaryAlphabet[8].code + primaryAlphabet[12].code);
+        }
+        if (number === "تريليون") {
+            numberAbbreviationFormula.push(primaryAlphabet[4].code + primaryAlphabet[9].code + primaryAlphabet[13].code);
+        }
+        numberAbbreviationsObject.push({ char: number, code: numberAbbreviationFormula[index]});
+    });
+    await nonLatinLanguageCharacters.updateOne(
+        { language: language.language },
+        { $set: { numberAbbreviationsObject: numberAbbreviationsObject }}
+    );
+};
+
+module.exports = {getAllLanguages, getLanguage, createLanguage, createNonLatinLanguage, modifyLanguage, deleteLanguage};
