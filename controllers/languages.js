@@ -21,12 +21,43 @@ const getLanguage = async (req, res) => {
 };
 
 const createLanguage = async (req, res) => {
-    const newLanguage = new LanguageCharacters(req.body);
-
+    let newLanguage = new LanguageCharacters(req.body);
+    const lowerUnicodeArray = [];
+    const capsUnicodeArray = [];
+    const specialSymbolsUnicode = [];
+    const secondKeypadUnicode = [];
+    const thirdKeypadUnicode = [];
+    const fourthKeypadUnicode = [];
     try {
-        await newLanguage.save();
+        if (newLanguage.language !== "English") {
+            newLanguage.lowerAlphabet.forEach((char) => {
+                lowerUnicodeArray.push(String.fromCharCode(parseInt(char, 16)));
+            });
+            newLanguage.lowerAlphabet = lowerUnicodeArray;
+            newLanguage.capsAlphabet.forEach((char) => {
+                capsUnicodeArray.push(String.fromCharCode(parseInt(char, 16)));
+            });
+            newLanguage.capsAlphabet = capsUnicodeArray;
+            newLanguage.specialSymbols.forEach((char) => {
+                specialSymbolsUnicode.push(String.fromCharCode(parseInt(char, 16)));
+            });
+            newLanguage.specialSymbols = specialSymbolsUnicode;
+        }
         generateCharactersArrays(newLanguage);
         generateSpecialSymbols(newLanguage);
+        newLanguage.secondKeypadLayer.forEach((char) => {
+            secondKeypadUnicode.push(String.fromCharCode(parseInt(char, 16)));
+        });
+        newLanguage.secondKeypadLayer = secondKeypadUnicode;
+        newLanguage.thirdKeypadLayer.forEach((char) => {
+            thirdKeypadUnicode.push(String.fromCharCode(parseInt(char, 16)));
+        });
+        newLanguage.thirdKeypadLayer = thirdKeypadUnicode;
+        newLanguage.fourthKeypadLayer.forEach((char) => {
+            fourthKeypadUnicode.push(String.fromCharCode(parseInt(char, 16)));
+        });
+        newLanguage.fourthKeypadLayer = fourthKeypadUnicode;
+        await newLanguage.save();
         res.status(201).json(`The ${newLanguage.language} Language has been added!`);
     } catch (error) {
         res.status(400).json({msg: `The Data is not valid, try again`});
@@ -58,30 +89,38 @@ const deleteLanguage = async (req, res) => {
 
 const generateCharactersArrays = async (language) => {
         const lowerAlphabet = language.lowerAlphabet;
+        const capsAlphabet = language.capsAlphabet;
         const primaryLowerAlphabet = [];
         const secondaryLowerAlphabet = [];
+        const primaryCapsAlphabet = [];
+        const secondaryCapsAlphabet = [];
         const primaryLowerArray = [...lowerAlphabet.slice(0,5), ...lowerAlphabet.slice(9,14),
             ...lowerAlphabet.slice(18,22)];
         primaryLowerArray.forEach((letter) => {
             primaryLowerAlphabet.push({char: letter, code: letter.charCodeAt(0)});
         });
-        const secondaryLowerAsciiArray = generateAsciiCharactersFormula(primaryLowerAlphabet);
-        const secondaryLowerArray = [...lowerAlphabet.slice(5,9), ...lowerAlphabet.slice(14,18),
-            ...lowerAlphabet.slice(22,26)];
-        secondaryLowerArray.forEach((letter, index) => {
-            secondaryLowerAlphabet.push({char: letter, code: secondaryLowerAsciiArray[index]});
-        });
-        const capsAlphabet = language.capsAlphabet;
-        const primaryCapsAlphabet = [];
-        const secondaryCapsAlphabet = [];
         const primaryCapsArray = [...capsAlphabet.slice(0,5), ...capsAlphabet.slice(9,14),
             ...capsAlphabet.slice(18,22)];
         primaryCapsArray.forEach((letter) => {
             primaryCapsAlphabet.push({char: letter, code: letter.charCodeAt(0)});
         });
-        const secondaryCapsAsciiArray = generateAsciiCharactersFormula(primaryCapsAlphabet);
-        const secondaryCapsArray = [...capsAlphabet.slice(5,9), ...capsAlphabet.slice(14,18),
-            ...capsAlphabet.slice(22,26)];
+        const secondaryLowerArray = [];
+        const secondaryCapsArray = [];
+        lowerAlphabet.filter((letter, index) => {
+            if (primaryLowerArray.includes(letter) === false) {
+                secondaryLowerArray.push(lowerAlphabet[index]);
+            }
+        });
+        capsAlphabet.filter((letter, index) => {
+            if (primaryCapsArray.includes(letter) === false) {
+                secondaryCapsArray.push(capsAlphabet[index]);
+            }
+        });
+        const secondaryLowerAsciiArray = generateAsciiLowerCharactersFormula(secondaryLowerArray);
+        secondaryLowerArray.forEach((letter, index) => {
+            secondaryLowerAlphabet.push({char: letter, code: secondaryLowerAsciiArray[index]});
+        });
+        const secondaryCapsAsciiArray = generateAsciiCapsCharactersFormula(secondaryCapsArray);
         secondaryCapsArray.forEach((letter, index) => {
             secondaryCapsAlphabet.push({char: letter, code: secondaryCapsAsciiArray[index]});
         });
@@ -98,27 +137,262 @@ const generateCharactersArrays = async (language) => {
         generateNumberAbbreviations(upToDateLanguage);
 };
 
-const generateAsciiCharactersFormula = (primaryAlphabet) => {
-    const secondaryAsciiCodeArray = [];
-    for (let i = 0; i < primaryAlphabet.length; i++) {
-        if (i < 4) {
-            const charactersFormula = ((primaryAlphabet[i].code + primaryAlphabet[i+1].code) / 2) + primaryAlphabet[i].code;
-            secondaryAsciiCodeArray.push(charactersFormula);
+const generateAsciiLowerCharactersFormula = (secondaryLowerAlphabet) => {
+    const secondaryLowerAsciiCodeArray = [];
+    secondaryLowerAlphabet.forEach((char, index) => {
+        switch (index) {
+            case 0:
+                firstAsciiCode = 97;
+                secondAsciiCode = 98;
+            break;
+            case 1:
+                firstAsciiCode = 98;
+                secondAsciiCode = 99;
+            break;
+            case 2:
+                firstAsciiCode = 99;
+                secondAsciiCode = 100;
+            break;
+            case 3:
+                firstAsciiCode = 100;
+                secondAsciiCode = 101;
+            break;
+            case 4:
+                firstAsciiCode = 106;
+                secondAsciiCode = 107;
+            break;
+            case 5:
+                firstAsciiCode = 107;
+                secondAsciiCode = 108;
+            break;
+            case 6:
+                firstAsciiCode = 108;
+                secondAsciiCode = 109;
+            break;
+            case 7:
+                firstAsciiCode = 109;
+                secondAsciiCode = 110;
+            break;
+            case 8:
+                firstAsciiCode = 115;
+                secondAsciiCode = 116;
+            break;
+            case 9:
+                firstAsciiCode = 116;
+                secondAsciiCode = 117;
+            break;
+            case 10:
+                firstAsciiCode = 117;
+                secondAsciiCode = 118;
+            break;
+            case 11:
+                firstAsciiCode = 115;
+                secondAsciiCode = 118;
+            break;
+    
+            case 12:
+                firstAsciiCode = 97;
+                secondAsciiCode = 106;
+            break;
+            case 13:
+                firstAsciiCode = 98;
+                secondAsciiCode = 107;
+            break;
+            case 14:
+                firstAsciiCode = 99;
+                secondAsciiCode = 108;
+            break;
+            case 15:
+                firstAsciiCode = 100;
+                secondAsciiCode = 109;
+            break;
+            case 16:
+                firstAsciiCode = 101;
+                secondAsciiCode = 110;
+            break;
+            case 17:
+                firstAsciiCode = 107;
+                secondAsciiCode = 115;
+            break;
+            case 18:
+                firstAsciiCode = 108;
+                secondAsciiCode = 116;
+            break;
+            case 19:
+                firstAsciiCode = 109;
+                secondAsciiCode = 117;
+            break;
+            case 20:
+                firstAsciiCode = 110;
+                secondAsciiCode = 118;
+            break;
+    
+            case 21:
+                firstAsciiCode = 98;
+                secondAsciiCode = 100;
+            break;
+            case 22:
+                firstAsciiCode = 99;
+                secondAsciiCode = 101;
+            break;
+            case 23:
+                firstAsciiCode = 98;
+                secondAsciiCode = 101;
+            break;
+            case 24:
+                firstAsciiCode = 107;
+                secondAsciiCode = 109;
+            break;
+            case 25:
+                firstAsciiCode = 108;
+                secondAsciiCode = 110;
+            break;
+            case 26:
+                firstAsciiCode = 107;
+                secondAsciiCode = 110;
+            break;
+            case 27:
+                firstAsciiCode = 115;
+                secondAsciiCode = 117;
+            break;
+            case 28:
+                firstAsciiCode = 116;
+                secondAsciiCode = 118;
+            break;
         }
-        else if (i > 4 && i < 9) {
-            const charactersFormula = ((primaryAlphabet[i].code + primaryAlphabet[i+1].code) / 2) + primaryAlphabet[i].code;
-            secondaryAsciiCodeArray.push(charactersFormula);
+    const charactersFormula = ((firstAsciiCode + secondAsciiCode) / 2) + firstAsciiCode;
+    secondaryLowerAsciiCodeArray.push(charactersFormula);
+    });
+    return secondaryLowerAsciiCodeArray;
+};
+
+const generateAsciiCapsCharactersFormula = (secondaryCapsAlphabet) => {
+    const secondaryCapsAsciiCodeArray = [];
+    secondaryCapsAlphabet.forEach((char, index) => {
+        switch (index) {
+            case 0:
+                firstAsciiCode = 65;
+                secondAsciiCode = 66;
+            break;
+            case 1:
+                firstAsciiCode = 66;
+                secondAsciiCode = 67;
+            break;
+            case 2:
+                firstAsciiCode = 67;
+                secondAsciiCode = 68;
+            break;
+            case 3:
+                firstAsciiCode = 68;
+                secondAsciiCode = 69;
+            break;
+            case 4:
+                firstAsciiCode = 74;
+                secondAsciiCode = 75;
+            break;
+            case 5:
+                firstAsciiCode = 75;
+                secondAsciiCode = 76;
+            break;
+            case 6:
+                firstAsciiCode = 76;
+                secondAsciiCode = 77;
+            break;
+            case 7:
+                firstAsciiCode = 77;
+                secondAsciiCode = 78;
+            break;
+            case 8:
+                firstAsciiCode = 83;
+                secondAsciiCode = 84;
+            break;
+            case 9:
+                firstAsciiCode = 84;
+                secondAsciiCode = 85;
+            break;
+            case 10:
+                firstAsciiCode = 85;
+                secondAsciiCode = 86;
+            break;
+            case 11:
+                firstAsciiCode = 83;
+                secondAsciiCode = 86;
+            break;
+    
+            case 12:
+                firstAsciiCode = 65;
+                secondAsciiCode = 74;
+            break;
+            case 13:
+                firstAsciiCode = 66;
+                secondAsciiCode = 75;
+            break;
+            case 14:
+                firstAsciiCode = 67;
+                secondAsciiCode = 76;
+            break;
+            case 15:
+                firstAsciiCode = 68;
+                secondAsciiCode = 77;
+            break;
+            case 16:
+                firstAsciiCode = 69;
+                secondAsciiCode = 78;
+            break;
+            case 17:
+                firstAsciiCode = 75;
+                secondAsciiCode = 83;
+            break;
+            case 18:
+                firstAsciiCode = 76;
+                secondAsciiCode = 84;
+            break;
+            case 19:
+                firstAsciiCode = 77;
+                secondAsciiCode = 85;
+            break;
+            case 20:
+                firstAsciiCode = 78;
+                secondAsciiCode = 86;
+            break;
+    
+            case 21:
+                firstAsciiCode = 66;
+                secondAsciiCode = 68;
+            break;
+            case 22:
+                firstAsciiCode = 67;
+                secondAsciiCode = 69;
+            break;
+            case 23:
+                firstAsciiCode = 66;
+                secondAsciiCode = 69;
+            break;
+            case 24:
+                firstAsciiCode = 75;
+                secondAsciiCode = 77;
+            break;
+            case 25:
+                firstAsciiCode = 76;
+                secondAsciiCode = 78;
+            break;
+            case 26:
+                firstAsciiCode = 75;
+                secondAsciiCode = 78;
+            break;
+            case 27:
+                firstAsciiCode = 83;
+                secondAsciiCode = 85;
+            break;
+            case 28:
+                firstAsciiCode = 84;
+                secondAsciiCode = 86;
+            break;
         }
-        else if (i > 9 && i < 13) {
-            const charactersFormula = ((primaryAlphabet[i].code + primaryAlphabet[i+1].code) / 2) + primaryAlphabet[i].code;
-            secondaryAsciiCodeArray.push(charactersFormula);
-        }
-        else if ( i === 13) {
-            const charactersFormula = ((primaryAlphabet[10].code + primaryAlphabet[13].code) / 2) + primaryAlphabet[10].code;
-            secondaryAsciiCodeArray.push(charactersFormula);
-        }
-    }
-    return secondaryAsciiCodeArray;
+    const charactersFormula = ((firstAsciiCode + secondAsciiCode) / 2) + firstAsciiCode;
+    secondaryCapsAsciiCodeArray.push(charactersFormula);
+    });
+    return secondaryCapsAsciiCodeArray;
 };
 
 const generateSpecialSymbols = async (language) => {
@@ -127,13 +401,13 @@ const generateSpecialSymbols = async (language) => {
     const specialSymbolFormula = [];
     const specialSymbolsObject = [];
     specialSymbols.forEach((symbol, index) => {
-        if (symbol === "!") {
+        if (symbol === "!" || symbol === "¡") {
             specialSymbolFormula.push(Math.pow(firstKeypadLayer[9].charCodeAt(0),2));
         }
         if (symbol === "@") {
            specialSymbolFormula.push(Math.pow(firstKeypadLayer[10].charCodeAt(0),2));
         }
-        if (symbol === "?") {
+        if (symbol === "?" || symbol === "¿") {
             specialSymbolFormula.push(Math.pow(firstKeypadLayer[11].charCodeAt(0),2));
         }
         specialSymbolsObject.push({ char: symbol, code: specialSymbolFormula[index]});
