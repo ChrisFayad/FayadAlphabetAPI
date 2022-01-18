@@ -1,6 +1,7 @@
 const LanguageCharacters = require('../models/languageCharacters');
 const nonLatinLanguageCharacters = require('../models/nonLatinLanguageCharacters');
 const { generateCharactersArrays, generateNonLatinCharactersArrays, generateSpecialSymbols } = require('../utils/controllersUtils');
+
 const getAllLanguages = async (req, res) => {
     try {
         let languages = [];
@@ -44,7 +45,7 @@ const getLanguage = async (req, res) => {
     }
 };
 
-const createLanguage = async (req, res) => {
+const createLanguage = async (req, res, next) => {
     let newLanguage = new LanguageCharacters(req.body);
     const lowerUnicodeArray = [];
     const capsUnicodeArray = [];

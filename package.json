@@ -19,6 +19,8 @@
   "homepage": "https://github.com/ChrisFayad/FayadAlphabetAPI#readme",
   "dependencies": {
     "express": "^4.17.2",
+    "express-validation": "^3.0.8",
+    "joi": "^17.5.0",
     "mongoose": "^6.1.5"
   },
   "devDependencies": {
