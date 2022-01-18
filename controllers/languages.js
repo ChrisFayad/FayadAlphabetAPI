@@ -1,4 +1,3 @@
-// const { version } = require('mongoose');
 const LanguageCharacters = require('../models/languageCharacters');
 const nonLatinLanguageCharacters = require('../models/nonLatinLanguageCharacters');
 
@@ -7,10 +6,13 @@ const getAllLanguages = async (req, res) => {
         let languages = [];
         const latinLanguages = await LanguageCharacters.find();
         const nonLatinLanguages = await nonLatinLanguageCharacters.find();
-        res.status(200);
-        latinLanguages.forEach(language => languages.push(language)); 
-        nonLatinLanguages.forEach(language => languages.push(language));
-        languages.forEach(language => res.json(language.language));
+        if (latinLanguages) {
+            latinLanguages.forEach(language => languages.push(language.language)); 
+        }
+        if (nonLatinLanguages) {
+            nonLatinLanguages.forEach(language => languages.push(language.language));
+        }
+        res.status(200).json(languages);
     } catch (error) {
         res.status(500).json({ msg: 'app could not retrieve data from database!' });
     }
@@ -20,7 +22,9 @@ const getLanguage = async (req, res) => {
     try {
         let language = '';
         language = await LanguageCharacters.findOne({language: req.params.language});
-        language = await nonLatinLanguageCharacters.findOne({language: req.params.language});
+        if (!language) {
+            language = await nonLatinLanguageCharacters.findOne({language: req.params.language});
+        }  
         res.status(200).json(language);
     } catch (error) {
         res.status(404).json({ msg: `The ${languageQuery} Language is not found!` });
@@ -96,10 +100,17 @@ const createNonLatinLanguage = async (req, res) => {
 const modifyLanguage = async (req, res) => {
     const languageQuery = req.query.language;
     try {
-        await LanguageCharacters.updateOne(
+        let modifyLanguage = '';
+        modifyLanguage = await LanguageCharacters.updateOne(
             { language: languageQuery },
             req.body
         );
+        if (modifyLanguage.modifiedCount !== 1) {
+            modifyLanguage = await nonLatinLanguageCharacters.updateOne(
+                { language: languageQuery },
+                req.body
+            );
+        }
         res.status(200).json(`The ${languageQuery} Language has been updated!`);
     } catch (error) {
         res.status(400).json({msg: error});
@@ -109,7 +120,11 @@ const modifyLanguage = async (req, res) => {
 const deleteLanguage = async (req, res) => {
     const languageQuery = req.query.language;
     try {
-        await LanguageCharacters.deleteOne({language: languageQuery});
+        let deleteLanguage = '';
+        deleteLanguage = await LanguageCharacters.deleteOne({language: languageQuery});
+        if (deleteLanguage.deletedCount !== 1) {
+            deleteLanguage = await nonLatinLanguageCharacters.deleteOne({language: languageQuery});
+        }
         res.status(200).json(`The ${languageQuery} Language has been deleted!`);
     } catch (error) {
         res.status(404).json({ msg: `The ${languageQuery} Language is not found!` });
