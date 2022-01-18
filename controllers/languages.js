@@ -1,6 +1,7 @@
 const LanguageCharacters = require('../models/languageCharacters');
 const nonLatinLanguageCharacters = require('../models/nonLatinLanguageCharacters');
 const { generateCharactersArrays, generateNonLatinCharactersArrays, generateSpecialSymbols } = require('../utils/controllersUtils');
+
 const getAllLanguages = async (req, res) => {
     try {
         let languages = [];
@@ -79,7 +80,7 @@ const createLanguage = async (req, res) => {
         await newLanguage.save();
         res.status(201).json(`The ${newLanguage.language} Language has been added!`);
     } catch (error) {
-        res.status(400).json({msg: `The Data is not valid, try again`});
+        res.status(400).json({msg: `${error}`});
     }
 };
 

@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const LanguageCharactersSchema = mongoose.Schema({
     language: {
         type: String,
-        required: true
+        required: true,
+        // validate: {
+        //     validator: async (language) => await LanguageCharacters.where({ language }).countDocuments() === 0,
+        //     message: language => `The ${language.value} language has already been added.`
+        // }
     },
     capsAlphabet: {
         type: [],
