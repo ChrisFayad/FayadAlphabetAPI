@@ -45,7 +45,7 @@ const getLanguage = async (req, res) => {
     }
 };
 
-const createLanguage = async (req, res, next) => {
+const createLanguage = async (req, res) => {
     let newLanguage = new LanguageCharacters(req.body);
     const lowerUnicodeArray = [];
     const capsUnicodeArray = [];
@@ -80,11 +80,11 @@ const createLanguage = async (req, res, next) => {
         await newLanguage.save();
         res.status(201).json(`The ${newLanguage.language} Language has been added!`);
     } catch (error) {
-        res.status(400).json({msg: `The Data is not valid, try again`});
+        res.status(500).json({msg: `${error}`});
     }
 };
 
-const createNonLatinLanguage = async (req, res) => {
+const createNonLatinLanguage = async (req, res, next) => {
     let newLanguage = new nonLatinLanguageCharacters(req.body);
     const secondKeypadUnicode = [];
     const thirdKeypadUnicode = [];
@@ -107,7 +107,7 @@ const createNonLatinLanguage = async (req, res) => {
         await newLanguage.save();
         res.status(201).json(`The ${newLanguage.language} Language has been added!`);
     } catch (error) {
-    res.status(400).json({msg: `The Data is not valid, try again`});
+        res.status(500).json({msg: `${error}`});
     }
 };
 

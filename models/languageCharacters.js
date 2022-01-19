@@ -3,15 +3,11 @@ const mongoose = require('mongoose');
 const LanguageCharactersSchema = mongoose.Schema({
     language: {
         type: String,
-        required: true,
-        validate: {
-            validator: async (language) => await LanguageCharacters.where({ language }).countDocuments() === 0,
-            message: ({ value }) => `The ${value} language has already been added.`
-        }
+        required: true
     },
     capsAlphabet: {
         type: [],
-        // required: true
+        required: true
     },
     primaryCapsAlphabet: [{
         char: String,
@@ -23,7 +19,7 @@ const LanguageCharactersSchema = mongoose.Schema({
     }],
     lowerAlphabet: {
         type: [],
-        // required: true
+        required: true
     },
     primaryLowerAlphabet: [{
         char: String,
@@ -67,6 +63,4 @@ const LanguageCharactersSchema = mongoose.Schema({
     }],
 });
 
-const LanguageCharacters = mongoose.model('LanguageCharacters', LanguageCharactersSchema);
-
-module.exports = LanguageCharacters;
+module.exports = mongoose.model('LanguageCharacters', LanguageCharactersSchema);
