@@ -1,11 +1,11 @@
-const LanguageCharacters = require('../models/languageCharacters');
+const LatinLanguageCharacters = require('../models/latinLanguageCharacters');
 const nonLatinLanguageCharacters = require('../models/nonLatinLanguageCharacters');
 const { generateCharactersArrays, generateNonLatinCharactersArrays, generateSpecialSymbols } = require('../utils/controllersUtils');
 
 const getAllLanguages = async (req, res) => {
     try {
         let languages = [];
-        const latinLanguages = await LanguageCharacters.find();
+        const latinLanguages = await LatinLanguageCharacters.find();
         const nonLatinLanguages = await nonLatinLanguageCharacters.find();
         if (latinLanguages) {
             latinLanguages.forEach(language => languages.push(language.language)); 
@@ -35,7 +35,7 @@ const getAllLanguages = async (req, res) => {
 const getLanguage = async (req, res) => {
     try {
         let language = '';
-        language = await LanguageCharacters.findOne({language: req.params.language});
+        language = await LatinLanguageCharacters.findOne({language: req.params.language});
         if (!language) {
             language = await nonLatinLanguageCharacters.findOne({language: req.params.language});
         }  
@@ -46,7 +46,7 @@ const getLanguage = async (req, res) => {
 };
 
 const createLanguage = async (req, res) => {
-    let newLanguage = new LanguageCharacters(req.body);
+    let newLanguage = new LatinLanguageCharacters(req.body);
     const lowerUnicodeArray = [];
     const capsUnicodeArray = [];
     const secondKeypadUnicode = [];
@@ -80,7 +80,11 @@ const createLanguage = async (req, res) => {
         await newLanguage.save();
         res.status(201).json(`The ${newLanguage.language} Language has been added!`);
     } catch (error) {
-        res.status(500).json({msg: `${error}`});
+        if (error.name === 'ValidationError') {
+            res.status(422).json({ msg: error.message.split(':')[2] });
+        } else {
+            res.status(500).json(error);
+        }  
     }
 };
 
@@ -107,7 +111,11 @@ const createNonLatinLanguage = async (req, res, next) => {
         await newLanguage.save();
         res.status(201).json(`The ${newLanguage.language} Language has been added!`);
     } catch (error) {
-        res.status(500).json({msg: `${error}`});
+        if (error.name === 'ValidationError') {
+            res.status(422).json({ msg: error.message.split(':')[2] });
+        } else {
+            res.status(500).json(error);
+        }  
     }
 };
 
@@ -115,7 +123,7 @@ const modifyLanguage = async (req, res) => {
     const languageQuery = req.query.language;
     try {
         let modifyLanguage = '';
-        modifyLanguage = await LanguageCharacters.updateOne(
+        modifyLanguage = await LatinLanguageCharacters.updateOne(
             { language: languageQuery },
             req.body
         );
@@ -135,7 +143,7 @@ const deleteLanguage = async (req, res) => {
     const languageQuery = req.query.language;
     try {
         let deleteLanguage = '';
-        deleteLanguage = await LanguageCharacters.deleteOne({language: languageQuery});
+        deleteLanguage = await LatinLanguageCharacters.deleteOne({language: languageQuery});
         if (deleteLanguage.deletedCount !== 1) {
             deleteLanguage = await nonLatinLanguageCharacters.deleteOne({language: languageQuery});
         }

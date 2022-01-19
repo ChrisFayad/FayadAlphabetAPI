@@ -1,4 +1,4 @@
-const LanguageCharacters = require('../models/languageCharacters');
+const LatinLanguageCharacters = require('../models/latinLanguageCharacters');
 const nonLatinLanguageCharacters = require('../models/nonLatinLanguageCharacters');
 
 const generateCharactersArrays = async (language) => {
@@ -38,7 +38,7 @@ const generateCharactersArrays = async (language) => {
     secondaryCapsArray.forEach((letter, index) => {
         secondaryCapsAlphabet.push({char: letter, code: secondaryCapsAsciiArray[index]});
     });
-    await LanguageCharacters.updateOne(
+    await LatinLanguageCharacters.updateOne(
             { language: language.language },
             { $set: {
                         primaryLowerAlphabet: primaryLowerAlphabet,
@@ -47,7 +47,7 @@ const generateCharactersArrays = async (language) => {
                         secondaryCapsAlphabet: secondaryCapsAlphabet,
                 } }
         );
-    const upToDateLanguage = await LanguageCharacters.findOne({language: language.language});
+    const upToDateLanguage = await LatinLanguageCharacters.findOne({language: language.language});
     generateNumberAbbreviations(upToDateLanguage);
 };
 
@@ -253,7 +253,7 @@ specialSymbols.forEach((symbol, index) => {
     specialSymbolsObject.push({ char: symbol, code: specialSymbolFormula[index]});
 });
 try {
-    await LanguageCharacters.updateOne(
+    await LatinLanguageCharacters.updateOne(
         { language: language.language },
         { $set: { specialSymbolsObject: specialSymbolsObject }}
     );
@@ -286,7 +286,7 @@ numberAbbreviations.forEach((number, index) => {
     }
     numberAbbreviationsObject.push({ char: number, code: numberAbbreviationFormula[index]});
 });
-await LanguageCharacters.updateOne(
+await LatinLanguageCharacters.updateOne(
     { language: language.language },
     { $set: { numberAbbreviationsObject: numberAbbreviationsObject }}
 );
