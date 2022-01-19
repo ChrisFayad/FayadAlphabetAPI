@@ -10,7 +10,7 @@ const languageValidator = (validationSchema) => {
       for (let item of error.details) {
         errors[item.path[0]] = item.message.split('\"')[2].trim();
       }
-      res.status(400).send(errors);
+      res.status(422).send(errors);
     }
   }
 };
