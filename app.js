@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv/config');
 const languagesRoutes = require('./routes/languages');
+const { ValidationError } = require('express-validation');
 
 mongoose.connect(process.env.DB_CONNECTION);
 

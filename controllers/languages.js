@@ -88,7 +88,7 @@ const createLanguage = async (req, res) => {
     }
 };
 
-const createNonLatinLanguage = async (req, res) => {
+const createNonLatinLanguage = async (req, res, next) => {
     let newLanguage = new nonLatinLanguageCharacters(req.body);
     const secondKeypadUnicode = [];
     const thirdKeypadUnicode = [];
