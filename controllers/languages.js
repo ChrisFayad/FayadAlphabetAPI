@@ -121,21 +121,38 @@ const createNonLatinLanguage = async (req, res, next) => {
 
 const modifyLanguage = async (req, res) => {
     const languageQuery = req.query.language;
+    const { firstKeypadLayer, secondKeypadLayer,
+        thirdKeypadLayer, fourthKeypadLayer,
+        specialSymbols, numberAbbreviations } = req.body;
     try {
         let modifyLanguage = '';
         modifyLanguage = await LatinLanguageCharacters.updateOne(
             { language: languageQuery },
-            req.body
+            { $set: { firstKeypadLayer: firstKeypadLayer,
+            secondKeypadLayer: secondKeypadLayer,
+            thirdKeypadLayer: thirdKeypadLayer,
+            fourthKeypadLayer: fourthKeypadLayer,
+            specialSymbols: specialSymbols,
+            numberAbbreviations: numberAbbreviations } }
         );
         if (modifyLanguage.modifiedCount !== 1) {
             modifyLanguage = await nonLatinLanguageCharacters.updateOne(
                 { language: languageQuery },
-                req.body
+                { $set: { firstKeypadLayer: firstKeypadLayer,
+                    secondKeypadLayer: secondKeypadLayer,
+                    thirdKeypadLayer: thirdKeypadLayer,
+                    fourthKeypadLayer: fourthKeypadLayer,
+                    specialSymbols: specialSymbols,
+                    numberAbbreviations: numberAbbreviations } }
             );
         }
         res.status(200).json(`The ${languageQuery} Language has been updated!`);
     } catch (error) {
-        res.status(400).json({msg: error});
+        if (error.name === 'ValidationError') {
+            res.status(422).json({ msg: error.message.split(':')[2] });
+        } else {
+            res.status(500).json(error);
+        }  
     }
 };
 

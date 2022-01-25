@@ -1,19 +1,20 @@
 const express = require('express');
 const { getAllLanguages, getLanguage, createLanguage, createNonLatinLanguage, modifyLanguage, deleteLanguage } = require('../controllers/languages');
 const languageValidator = require('../validation/languageValidator');
-const validationSchema = require('../validation/languageValidationSchema');
+const validationLanguageSchema = require('../validation/languageValidationSchema');
+const validationKeypadSchema = require('../validation/keypadValidationSchema') ;
 
 const router = express.Router();
 
 router.get('/', getAllLanguages);
 
-router.post('/', languageValidator(validationSchema.latinLanguage), createLanguage);
+router.post('/', languageValidator(validationLanguageSchema.latinLanguage), createLanguage);
 
-router.post('/nonLatin', languageValidator(validationSchema.nonLatinLanguage), createNonLatinLanguage);
+router.post('/nonLatin', languageValidator(validationLanguageSchema.nonLatinLanguage), createNonLatinLanguage);
 
 router.get('/:language', getLanguage);
 
-router.patch('/', modifyLanguage);
+router.patch('/', languageValidator(validationKeypadSchema), modifyLanguage);
 
 router.delete('/', deleteLanguage);
 
