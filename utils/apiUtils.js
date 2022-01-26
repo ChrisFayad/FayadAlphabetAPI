@@ -1,6 +1,5 @@
 const apiUsers = require('../models/apiUsers');
 require('dotenv/config');
-const mongoose = require('mongoose');
 
 const genKey = () => {
     return [...Array(30)]
@@ -12,19 +11,17 @@ const apiParams = (req) => {
     const today = new Date().toISOString().split('T')[0];
     return {
         apiKey: genKey(),
-        host: req.headers.origin,
         usage: [{ date: today, count: 0 }]
     };
 };
 
 const authenticate = async (req, res, next) => {
-    const host = req.headers.origin;
-    const apiKey = req.headers.authorization;
-
-    const apiUser = apiUsers.findOne({ host, apiKey });
+    const host = req.header('Host');
+    const apiKey = req.header('apiKey');
+    const apiUser = await apiUsers.findOne({ host: host, apiKey: apiKey });
     if (apiUser) {
         const today = new Date().toISOString().split('T')[0];
-        let usageIndex = apiUser.where('usage.date').equals(today);
+        let usageIndex = apiUsers.where('usage.date').equals(today);
 
         if (usageIndex >= 0) {
             if (usageIndex.count >= process.env.API_MAX) {
