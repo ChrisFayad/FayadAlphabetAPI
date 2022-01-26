@@ -47,20 +47,21 @@ const getLanguage = async (req, res) => {
 
 const createLanguage = async (req, res) => {
     let newLanguage = new LatinLanguageCharacters(req.body);
-    const lowerUnicodeArray = [];
-    const capsUnicodeArray = [];
     const secondKeypadUnicode = [];
     const thirdKeypadUnicode = [];
     const fourthKeypadUnicode = [];
     try {
-        if (newLanguage.language === "Spanish") {
+        if (req.query.unicode === 'true') {
+            const lowerUnicodeArray = [];
+            const capsUnicodeArray = [];
+
             newLanguage.lowerAlphabet.forEach((char) => {
                 lowerUnicodeArray.push(String.fromCharCode(parseInt(char, 16)));
             });
-            newLanguage.lowerAlphabet = lowerUnicodeArray;
             newLanguage.capsAlphabet.forEach((char) => {
                 capsUnicodeArray.push(String.fromCharCode(parseInt(char, 16)));
             });
+            newLanguage.lowerAlphabet = lowerUnicodeArray;
             newLanguage.capsAlphabet = capsUnicodeArray;
         }
         newLanguage.secondKeypadLayer.forEach((char) => {
