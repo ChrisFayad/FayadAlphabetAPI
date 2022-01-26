@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-const languageValidator = (validationSchema) => {
+const validator = (validationSchema) => {
   return async (req, res, next) => {
     try {
       await validationSchema.validateAsync(req.body, { abortEarly: false });
@@ -15,4 +15,4 @@ const languageValidator = (validationSchema) => {
   }
 };
 
-module.exports = languageValidator;
+module.exports = validator;

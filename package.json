@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/ChrisFayad/FayadAlphabetAPI#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.17.2",
     "joi": "^17.5.0",
     "mongoose": "^6.1.5"

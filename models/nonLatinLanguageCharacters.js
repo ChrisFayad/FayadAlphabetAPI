@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 
+const apiDB = mongoose.createConnection(process.env.API_DB_CONNECTION);
+
 const nonLatinLanguageCharactersSchema = mongoose.Schema({
     language: {
         type: String,
         unique: true,
         required: true,
-        trim: true
+        trim: true,
+        index: true
     },
     Alphabet: {
         type: [],
@@ -61,8 +64,8 @@ const nonLatinLanguageCharactersSchema = mongoose.Schema({
 });
 
 nonLatinLanguageCharactersSchema.path('language').validate(async (language) => {
-    const languageCount = await mongoose.models.nonLatinLanguageCharacters.countDocuments({ language });
+    const languageCount = await apiDB.models.nonLatinLanguageCharacters.countDocuments({ language });
     return !languageCount;
 }, `The language you are trying to insert already exists!`);
 
-module.exports = mongoose.model('nonLatinLanguageCharacters', nonLatinLanguageCharactersSchema);
+module.exports = apiDB.model('nonLatinLanguageCharacters', nonLatinLanguageCharactersSchema);
