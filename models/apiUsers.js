@@ -17,6 +17,7 @@ const apiUsersSchema = mongoose.Schema({
     },
     apiKey: {
         type: String,
+        index: true
     },
     host: {
         type: String,
