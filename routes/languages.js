@@ -11,12 +11,12 @@ router.get('/', authenticate, getAllLanguages);
 
 router.post('/', authenticate, validator(validationLanguageSchema.latinLanguage), createLanguage);
 
-router.post('/nonLatin', validator(validationLanguageSchema.nonLatinLanguage), createNonLatinLanguage);
+router.post('/nonLatin', authenticate, validator(validationLanguageSchema.nonLatinLanguage), createNonLatinLanguage);
 
-router.get('/:language', getLanguage);
+router.get('/:language', authenticate, getLanguage);
 
-router.patch('/', validator(validationKeypadSchema), modifyLanguage);
+router.patch('/', authenticate, validator(validationKeypadSchema), modifyLanguage);
 
-router.delete('/', deleteLanguage);
+router.delete('/', authenticate, deleteLanguage);
 
 module.exports = router;

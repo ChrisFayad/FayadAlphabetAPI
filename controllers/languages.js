@@ -1,6 +1,6 @@
 const LatinLanguageCharacters = require('../models/latinLanguageCharacters');
 const nonLatinLanguageCharacters = require('../models/nonLatinLanguageCharacters');
-const { generateCharactersArrays, generateNonLatinCharactersArrays, generateSpecialSymbols } = require('../utils/controllersUtils');
+const { generateCharactersArrays, generateNonLatinCharactersArrays, generateSpecialSymbols } = require('../utils/languageUtils');
 
 const getAllLanguages = async (req, res) => {
     try {
@@ -63,8 +63,6 @@ const createLanguage = async (req, res) => {
             });
             newLanguage.capsAlphabet = capsUnicodeArray;
         }
-        generateCharactersArrays(newLanguage);
-        generateSpecialSymbols(newLanguage);
         newLanguage.secondKeypadLayer.forEach((char) => {
             secondKeypadUnicode.push(String.fromCharCode(parseInt(char, 16)));
         });
@@ -77,13 +75,15 @@ const createLanguage = async (req, res) => {
             fourthKeypadUnicode.push(String.fromCharCode(parseInt(char, 16)));
         });
         newLanguage.fourthKeypadLayer = fourthKeypadUnicode;
+        generateCharactersArrays(newLanguage);
         await newLanguage.save();
+        generateSpecialSymbols(newLanguage);
         res.status(201).json(`The ${newLanguage.language} Language has been added!`);
     } catch (error) {
         if (error.name === 'ValidationError') {
             res.status(422).json({ msg: error.message.split(':')[2] });
         } else {
-            res.status(500).json(error);
+            res.status(500).json(error.message);
         }  
     }
 };
@@ -94,8 +94,6 @@ const createNonLatinLanguage = async (req, res, next) => {
     const thirdKeypadUnicode = [];
     const fourthKeypadUnicode = [];
     try {
-        generateNonLatinCharactersArrays(newLanguage);
-        generateSpecialSymbols(newLanguage);
         newLanguage.secondKeypadLayer.forEach((char) => {
             secondKeypadUnicode.push(String.fromCharCode(parseInt(char, 16)));
         });
@@ -108,7 +106,9 @@ const createNonLatinLanguage = async (req, res, next) => {
             fourthKeypadUnicode.push(String.fromCharCode(parseInt(char, 16)));
         });
         newLanguage.fourthKeypadLayer = fourthKeypadUnicode;
+        generateNonLatinCharactersArrays(newLanguage);
         await newLanguage.save();
+        generateSpecialSymbols(newLanguage);
         res.status(201).json(`The ${newLanguage.language} Language has been added!`);
     } catch (error) {
         if (error.name === 'ValidationError') {
@@ -170,4 +170,4 @@ const deleteLanguage = async (req, res) => {
     }
 };
 
-module.exports = {getAllLanguages, getLanguage, createLanguage, createNonLatinLanguage, modifyLanguage, deleteLanguage};
+module.exports = { getAllLanguages, getLanguage, createLanguage, createNonLatinLanguage, modifyLanguage, deleteLanguage };
