@@ -21,7 +21,7 @@ const getAllLanguages = async (req, res) => {
                     request: {
                         type: 'GET',
                         description: `Get ${language} language information...`,
-                        url: `http://localhost:7000/languages/${language}`
+                        url: `https://localhost:7000/languages/${language}`
                     }
                 };
             })
@@ -114,7 +114,7 @@ const createNonLatinLanguage = async (req, res, next) => {
         if (error.name === 'ValidationError') {
             res.status(422).json({ msg: error.message.split(':')[2] });
         } else {
-            res.status(500).json(error);
+            res.status(500).json(error.message);
         }  
     }
 };
@@ -151,7 +151,7 @@ const modifyLanguage = async (req, res) => {
         if (error.name === 'ValidationError') {
             res.status(422).json({ msg: error.message.split(':')[2] });
         } else {
-            res.status(500).json(error);
+            res.status(500).json(error.message);
         }  
     }
 };
