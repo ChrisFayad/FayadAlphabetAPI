@@ -36,7 +36,8 @@ const authenticate = async (req, res, next) => {
                         { $set: { usage: updateCount } });
                     next();
                 }
-            } else {
+            }
+        } else {
                 const newUsage = {
                     date: today,
                     count: 1
@@ -45,7 +46,6 @@ const authenticate = async (req, res, next) => {
                     { $set: { usage: newUsage } });
                 next();
             }
-        }
     } else {
         res.status(403).send({ msg: 'Unauthorized!'});
     }
