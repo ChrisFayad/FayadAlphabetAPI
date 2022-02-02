@@ -7,7 +7,7 @@
 ## Outline
 
 - [Overview](#overview)
-- [Technologies and Libraries] (#technologies-and-libraries)
+- [Technologies and Libraries](#technologies-and-libraries)
 - [Instructions](#instructions)
   - [Getting Started](#getting-started)
 - [Structure](#structure)
@@ -26,11 +26,12 @@
 
 This project was build using Node.js and uses the following list of technologies and libraries:
 
-- Expressjs
-- Joi Validation
-- bcrypt
-- Mongoose
-- cors
+- [Express](https://expressjs.com/)
+- [Joi Validation](https://joi.dev/api/?v=17.6.0)
+- [bcrypt](https://github.com/kelektiv/node.bcrypt.js#readme)
+- [Mongoose](https://mongoosejs.com/docs/guide.html)
+- [cors](https://www.npmjs.com/package/cors)
+
 ---
 
 ## Instructions
