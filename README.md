@@ -11,8 +11,6 @@
   - [Getting Started](#getting-started)
 - [Structure](#structure)
 - [Implementation Details](#implementation-details)
-  - [Mongoose and mongoDB](#mongoose-mongodb)
-  - [Joi Validation](#joi-validation)
   - [API Details](#api-details)
 
 ## Overview
@@ -45,29 +43,29 @@ To be able to use our API, you will need to register and get your own **API KEY*
 
 1.  To register, go to Postman and send a POST request to the following link https://localhost:7000/developers with a Body that contains your email and password as JSON.
 
-    1.  So, if I register with the email *fayadchristina@gmail.com*
+    1.  So, if I register with the email *newuser@gmail.com*
         I will receive the following response
         > ```
         > {
-        >   "msg": "The fayadchristina@gmail.com Email has been registered!",
+        >   "msg": "The newuser@gmail.com Email has been registered!",
         >   "request":
         >             {
         >               "type": "GET",
-        >               "description": "Get fayadchristina@gmail.com information...",
-        >               "url": "https://localhost:7000/developers?email=fayadchristina@gmail.com"
+        >               "description": "Get newuser@gmail.com information...",
+        >               "url": "https://localhost:7000/developers?email=newuser@gmail.com"
         >             }
         > }
         > ```
-    2.  Then you either need to visit the _url_ that was given to you through the response or you need to send a GET request to the following link https://localhost:7000/developers?email=fayadchristina@gmail.com
+    2.  Then you either need to visit the _url_ that was given to you through the response or you need to send a GET request to the following link https://localhost:7000/developers?email=newuser@gmail.com
 
     3.  You will get your email, hashed password, host, usage & apiKey as a response. You will need to add that use **apiKey** to the **Header** for **authorization**.
 
-2.  If you want you can delete your account bu sending a DELETE request to the following link https://localhost:7000/developers?email=fayadchristina@gmail.com.
+2.  If you want you can delete your account bu sending a DELETE request to the following link https://localhost:7000/developers?email=newuser@gmail.com.
 
 3.  Or you can modify your password by sending a PATCH request to the following link https://localhost:7000/developers with a Body written in JSON as following
     > ```
     > {
-    >   "email": "fayadchristina@gmail.com",
+    >   "email": "newuser@gmail.com",
     >   "password": "20200505"
     > }
     > ```
@@ -109,10 +107,6 @@ To be able to use our API, you will need to register and get your own **API KEY*
 
 ## Implementation Details
 
-<!--- ### Mongoose and mongoDB --->
-
-<!--- ### Joi Validation --->
-
 ### API Details
 
 #### Listing existing languages
@@ -128,7 +122,7 @@ To be able to use our API, you will need to register and get your own **API KEY*
 
 > | http code | content-type       | response                                                |
 > | --------- | ------------------ | ------------------------------------------------------- |
-> | `200`     | `application/json` | `application/json`                                      |
+> | `200`     | `application/json` | `json`                                                  |
 > | `500`     | `application/json` | `{ msg: 'app could not retrieve data from database!' }` |
 
 ##### Example
@@ -146,9 +140,9 @@ To be able to use our API, you will need to register and get your own **API KEY*
 
 ##### Parameters
 
-> | name     | type     | data type          |
-> | -------- | -------- | ------------------ |
-> | language | required | `application/json` |
+> | name     | type     |
+> | -------- | -------- |
+> | language | required |
 
 ##### Responses
 
@@ -293,9 +287,9 @@ To be able to use our API, you will need to register and get your own **API KEY*
 
 ##### Parameters
 
-> | name     | type     | data type          |
-> | -------- | -------- | ------------------ |
-> | language | required | `application/json` |
+> | name     | type     |
+> | -------- | -------- |
+> | language | required |
 
 ##### Responses
 
@@ -324,9 +318,9 @@ To be able to use our API, you will need to register and get your own **API KEY*
 
 ##### Parameters
 
-> | name     | type     | data type          |
-> | -------- | -------- | ------------------ |
-> | language | required | `application/json` |
+> | name     | type     |
+> | -------- | -------- |
+> | language | required |
 
 ##### Responses
 
