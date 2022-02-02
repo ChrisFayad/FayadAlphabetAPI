@@ -27,7 +27,7 @@ In this API we are using a **Secure Sockets Layer** and to do so we generated a 
 So if you want to use our API you will need to generate your own self-signed SSL certificate.
 **To do so, follow the snippet code below**.
 
-Fist create a new Folder called **ssl**.
+First create a new Folder called **ssl**.
 
 > openssl genrsa -out key.pem
 
