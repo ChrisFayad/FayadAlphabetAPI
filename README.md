@@ -7,6 +7,7 @@
 ## Outline
 
 - [Overview](#overview)
+- [Technologies and Libraries] (#technologies-and-libraries)
 - [Instructions](#instructions)
   - [Getting Started](#getting-started)
 - [Structure](#structure)
@@ -19,6 +20,17 @@
 
 - This API give us the ability to create the layout of hand-touch alphabet for any language from Latin origin or non-Latin origin.
 
+---
+
+## Technologies and Libraries
+
+This project was build using Node.js and uses the following list of technologies and libraries:
+
+- Expressjs
+- Joi Validation
+- bcrypt
+- Mongoose
+- cors
 ---
 
 ## Instructions
